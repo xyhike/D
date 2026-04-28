@@ -1,0 +1,129 @@
+//Bully
+import java.util.*;
+
+public class BullyFormattedDynamic {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter total number of nodes: ");
+        int n = sc.nextInt();
+
+        boolean[] active = new boolean[n];
+        for (int i = 0; i < n; i++) {
+            active[i] = true;
+        }
+
+        System.out.print("Enter the node that fails (1 to " + n + "): ");
+        int failedNode = sc.nextInt();
+        active[failedNode - 1] = false;
+
+        System.out.print("Enter the node that detects the failure and starts election: ");
+        int initiator = sc.nextInt();
+
+        System.out.println("\n--- Election Process Started ---");
+
+        int current = initiator;
+
+        for (int i = current; i < n; i++) {
+            if (active[i]) {
+                System.out.println("Node " + current + " sends ELECTION to Node " + (i + 1));
+                System.out.println("Node " + (i + 1) + " responds OK to Node " + current);
+                current = i + 1;
+            }
+        }
+
+        System.out.println("\n*** Node " + current + " IS THE NEW LEADER ***\n");
+
+        for (int i = 0; i < n; i++) {
+            if (i != current - 1 && active[i]) {
+                System.out.println("Node " + current + " sends LEADER message to Node " + (i + 1));
+            }
+        }
+
+        sc.close();
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//RING
+import java.util.*;
+
+public class RingSimulation {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter total number of nodes: ");
+        int n = sc.nextInt();
+
+        boolean[] active = new boolean[n];
+        for (int i = 0; i < n; i++) {
+            active[i] = true;
+        }
+
+        System.out.print("Enter the ID of the node that fails (1 to " + n + "): ");
+        int fail = sc.nextInt();
+        active[fail - 1] = false;
+        System.out.println("Node " + fail + " has failed.");
+
+        System.out.print("Enter the ID of the node that starts the election (1 to " + n + "): ");
+        int start = sc.nextInt();
+
+        List<Integer> list = new ArrayList<>();
+        int current = start - 1;
+
+        list.add(start);
+        System.out.println("\n[Node " + start + "] Starting election. Passing list: " + list);
+
+        int i = (current + 1) % n;
+
+        while (i != current) {
+            if (active[i]) {
+                list.add(i + 1);
+                System.out.println("[Node " + (i + 1) + "] Received list. Adding self and passing: " + list);
+            }
+            i = (i + 1) % n;
+        }
+
+        int leader = Collections.max(list);
+
+        System.out.println("\n--- Election Over. Node " + leader + " is the Leader ---");
+
+        for (int j = 0; j < n; j++) {
+            if (active[j]) {
+                System.out.println("[Node " + (j + 1) + "] Acknowledged new Leader: " + leader);
+            }
+        }
+
+        sc.close();
+    }
+}
