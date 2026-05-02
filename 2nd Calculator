@@ -1,0 +1,76 @@
+//Calculator.idl:
+
+module CalculatorApp { interface Calculator {
+double add(in double a, in double b); double sub(in double a, in double b); double mul(in double a, in double b); double div(in double a, in double b);
+};
+};
+
+//CalculatorImpl.java:
+
+import CalculatorApp.CalculatorPOA;
+
+class CalculatorImpl extends CalculatorPOA { private org.omg.CORBA.ORB orb;
+public void setORB(org.omg.CORBA.ORB orb_val) { orb = orb_val;
+}
+// Implement the add method
+public double add(double a, double b) { return a + b;
+}
+// Implement the subtract method public double sub(double a, double b) {
+return a - b;
+}
+// Implement the multiply method public double mul(double a, double b) {
+return a * b;
+}
+// Implement the divide method
+public double div(double a, double b) { return a / b;
+}
+}
+
+//CalculatorServer.java:
+import CalculatorApp.*; import org.omg.CosNaming.*; import org.omg.CORBA.*;
+import org.omg.PortableServer.*; import org.omg.PortableServer.POA;
+ 
+public class CalculatorServer {
+public static void main(String args[]) { try {
+// 1. Create and initialize the ORB ORB orb = ORB.init(args, null);
+// 2. Get reference to rootpoa and activate the POAManager
+POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA")); rootpoa.the_POAManager().activate();
+// 3. Create servant and register it with the ORB CalculatorImpl calcImpl = new CalculatorImpl(); calcImpl.setORB(orb);
+
+// 4. Get object reference from the servant
+org.omg.CORBA.Object ref = rootpoa.servant_to_reference(calcImpl); Calculator href = CalculatorHelper.narrow(ref);
+// 5. Get the root naming context
+org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService"); NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
+// 6. Bind the Object Reference in Naming String name = "Calc";
+NameComponent path[] = ncRef.to_name(name); ncRef.rebind(path, href);
+System.out.println("Calculator Server ready and waiting ...");
+
+// 7. Wait for client invocations orb.run();
+} catch (Exception e) { System.err.println("ERROR: " + e); e.printStackTrace(System.out);
+}
+}
+}
+
+//CalculatorClient.java:
+import CalculatorApp.*; import org.omg.CosNaming.*;
+import org.omg.CosNaming.NamingContextPackage.*; import org.omg.CORBA.*;
+import java.util.Scanner;
+
+public class CalculatorClient {
+public static void main(String args[]) { try {
+// 1. Create and initialize the ORB
+ 
+ORB orb = ORB.init(args, null);
+// 2. Get the root naming context
+org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService"); NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
+// 3. Resolve the Object Reference in Naming String name = "Calc";
+Calculator calcImpl = CalculatorHelper.narrow(ncRef.resolve_str(name));
+
+// 4. User Interface
+Scanner sc = new Scanner(System.in); System.out.println("Enter first number:"); double num1 = sc.nextDouble(); System.out.println("Enter second number:"); double num2 = sc.nextDouble();
+// 5. Remote Procedure Calls
+System.out.println("Addition: " + calcImpl.add(num1, num2)); System.out.println("Subtraction: " + calcImpl.sub(num1, num2)); System.out.println("Multiplication: " + calcImpl.mul(num1, num2)); System.out.println("Division: " + calcImpl.div(num1, num2));
+} catch (Exception e) { System.out.println("Client exception: " + e); e.printStackTrace();
+}
+}
+}
