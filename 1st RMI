@@ -49,3 +49,14 @@ catch(Exception e)
  }
  }
  }
+
+
+javac Server.java
+javac Client.java
+javac AddInterface.java
+javac AddImplementation.java
+rmiregistry
+
+java Server 
+
+java Client
