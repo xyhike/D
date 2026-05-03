@@ -55,3 +55,6 @@ public class TokenRing{
     
   }
 }
+
+javac TokenRing.java
+java TokenRing
