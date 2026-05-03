@@ -36,3 +36,7 @@ int main(int argc, char *argv[])
     MPI_Finalize();
     return 0;
 }
+
+
+  mpicc mpi.c -o mpi
+  mpirun -np 4 ./mpi
