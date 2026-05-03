@@ -127,3 +127,10 @@ public class RingSimulation {
         sc.close();
     }
 }
+
+
+javac Bully.java
+java Bully
+
+javac Ring.java
+java Ring
