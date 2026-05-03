@@ -1,0 +1,38 @@
+#include <mpi.h>
+#include <stdio.h>
+
+#define N 10
+
+int main(int argc, char *argv[])
+{
+    int rank, size;
+    int a[N] = {1,2,3,4,5,6,7,8,9,10};
+    int local_sum = 0, total_sum = 0;
+
+    MPI_Init(&argc, &argv);
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    // Each process works on DIFFERENT elements
+    for(int i = rank; i < N; i += size)
+    {
+        local_sum += a[i];
+    }
+
+    // Print each process result ONCE
+    printf("Process %d partial sum = %d\n", rank, local_sum);
+    fflush(stdout);
+
+    // Combine all partial sums into final sum
+    MPI_Reduce(&local_sum, &total_sum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    // Only ONE process prints final result
+    if(rank == 0)
+    {
+        printf("\nFinal Sum of array is: %d\n", total_sum);
+    }
+
+    MPI_Finalize();
+    return 0;
+}
