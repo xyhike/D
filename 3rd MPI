@@ -37,6 +37,6 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-
+  sudo apt install mpich
   mpicc mpi.c -o mpi
   mpirun -np 4 ./mpi
